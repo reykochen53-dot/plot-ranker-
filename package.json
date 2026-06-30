@@ -1,0 +1,48 @@
+{
+  "name": "plotranker",
+  "version": "1.0.0",
+  "description": "Local planning-plan alignment and transparent plot ranking app",
+  "main": "main.js",
+  "author": "PlotRanker",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "verify": "node scripts/verify.mjs",
+    "dist:mac": "electron-builder --mac --universal --publish never"
+  },
+  "devDependencies": {
+    "electron": "42.5.1",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "com.plotranker.desktop",
+    "productName": "PlotRanker",
+    "asar": true,
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "identity": null,
+      "category": "public.app-category.productivity",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["universal"]
+        },
+        {
+          "target": "zip",
+          "arch": ["universal"]
+        }
+      ]
+    },
+    "dmg": {
+      "title": "PlotRanker"
+    }
+  }
+}

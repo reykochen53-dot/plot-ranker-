@@ -1,0 +1,52 @@
+name: Build PlotRanker for macOS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-macos:
+    runs-on: macos-14
+    timeout-minutes: 60
+
+    steps:
+      - name: Download project
+        uses: actions/checkout@v4
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - name: Check required files
+        run: |
+          test -f package.json
+          test -f src-tauri/Cargo.toml
+          test -f src-tauri/tauri.conf.json
+          test -f src-tauri/icons/icon.png
+
+      - name: Install app packages
+        run: npm install
+
+      - name: Generate Mac icons
+        run: npm run tauri -- icon src-tauri/icons/icon.png
+
+      - name: Build Mac app
+        run: npm run tauri -- build --target universal-apple-darwin
+
+      - name: Save finished app
+        uses: actions/upload-artifact@v4
+        with:
+          name: PlotRanker-macOS
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/*.app
